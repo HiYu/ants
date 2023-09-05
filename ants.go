@@ -104,7 +104,7 @@ func Submit(task func()) error {
 }
 
 // Running returns the number of the currently running goroutines.
-func Running() int {
+func Running() int { // 正在执行的 worker 的数目
 	return defaultAntsPool.Running()
 }
 

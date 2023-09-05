@@ -18,10 +18,10 @@ type Options struct {
 	// ExpiryDuration is a period for the scavenger goroutine to clean up those expired workers,
 	// the scavenger scans all workers every `ExpiryDuration` and clean up those workers that haven't been
 	// used for more than `ExpiryDuration`.
-	ExpiryDuration time.Duration
+	ExpiryDuration time.Duration // 1. 清理协程执行周期；2. worker 生命周期，使用时间超过 ExpiryDuration 的 worker 将被清除 
 
 	// PreAlloc indicates whether to make memory pre-allocation when initializing Pool.
-	PreAlloc bool
+	PreAlloc bool // 是否预分配内存
 
 	// Max number of goroutine blocking on pool.Submit.
 	// 0 (default value) means no such limit.
@@ -41,7 +41,7 @@ type Options struct {
 	Logger Logger
 
 	// When DisablePurge is true, workers are not purged and are resident.
-	DisablePurge bool
+	DisablePurge bool // 关闭周期清理功能
 }
 
 // WithOptions accepts the whole options config.

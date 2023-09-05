@@ -60,12 +60,12 @@ func (w *goWorker) run() {
 			w.pool.cond.Signal()
 		}()
 
-		for f := range w.task {
+		for f := range w.task { // 取出 task，没有的话则阻塞
 			if f == nil {
 				return
 			}
-			f()
-			if ok := w.pool.revertWorker(w); !ok {
+			f() // 执行 task
+			if ok := w.pool.revertWorker(w); !ok { // 归还 worker
 				return
 			}
 		}
@@ -80,7 +80,7 @@ func (w *goWorker) lastUsedTime() time.Time {
 	return w.lastUsed
 }
 
-func (w *goWorker) inputFunc(fn func()) {
+func (w *goWorker) inputFunc(fn func()) { // 将 task 丢到 task channel 中
 	w.task <- fn
 }
 

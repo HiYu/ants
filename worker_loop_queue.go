@@ -2,13 +2,13 @@ package ants
 
 import "time"
 
-type loopQueue struct {
-	items  []worker
+type loopQueue struct { // 循环队列
+	items  []worker // 队列底层 slice
 	expiry []worker
-	head   int
-	tail   int
-	size   int
-	isFull bool
+	head   int // 队列头
+	tail   int // 队列尾
+	size   int // 队列大小
+	isFull bool // 是否队列已满
 }
 
 func newWorkerLoopQueue(size int) *loopQueue {
@@ -52,7 +52,7 @@ func (wq *loopQueue) insert(w worker) error {
 	wq.items[wq.tail] = w
 	wq.tail++
 
-	if wq.tail == wq.size {
+	if wq.tail == wq.size { // 循环
 		wq.tail = 0
 	}
 	if wq.tail == wq.head {
@@ -67,13 +67,13 @@ func (wq *loopQueue) detach() worker {
 		return nil
 	}
 
-	w := wq.items[wq.head]
+	w := wq.items[wq.head] // 从队列头取出一个worker
 	wq.items[wq.head] = nil
 	wq.head++
-	if wq.head == wq.size {
+	if wq.head == wq.size { // 到队尾
 		wq.head = 0
 	}
-	wq.isFull = false
+	wq.isFull = false // 取出一个 worker 之前，不管是不是满的，取出之后必然不是满的，直接将 isFull 设置 为 false 即可
 
 	return w
 }
@@ -84,7 +84,7 @@ func (wq *loopQueue) refresh(duration time.Duration) []worker {
 	if index == -1 {
 		return nil
 	}
-	wq.expiry = wq.expiry[:0]
+	wq.expiry = wq.expiry[:0] // 清空过期slice
 
 	if wq.head <= index {
 		wq.expiry = append(wq.expiry, wq.items[wq.head:index+1]...)
@@ -115,7 +115,7 @@ func (wq *loopQueue) binarySearch(expiryTime time.Time) int {
 	nlen = len(wq.items)
 
 	// if no need to remove work, return -1
-	if wq.isEmpty() || expiryTime.Before(wq.items[wq.head].lastUsedTime()) {
+	if wq.isEmpty() || expiryTime.Before(wq.items[wq.head].lastUsedTime()) { // head 是最先进入队列的worker，也会最先被使用，如果它没有过期，其它的 worker 都不会过去的
 		return -1
 	}
 
